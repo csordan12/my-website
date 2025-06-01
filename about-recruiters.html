@@ -1,0 +1,2608 @@
+<html lang="en-GB">
+<style>
+    .job-list {
+        list-style-type: none;
+        /* Remove default list numbers */
+        padding: 0;
+        margin: 0;
+        margin-top: 100px;
+        padding-right: 100px;
+    }
+
+    .job-list li {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding: 10px 0;
+    }
+
+    .job-number {
+        font-weight: bold;
+        width: 50px;
+        /* Fixed width for job number */
+        text-align: left;
+        font-size: 15px;
+    }
+
+    .job-details {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        flex-grow: 1;
+    }
+
+    .job-title {
+        font-weight: bold;
+    }
+
+    .job-dates {
+        color: #777;
+        /* Gray color for the dates */
+    }
+</style>
+<style>
+    :root {
+        --bg-colour: #f5f4ec;
+        --text-colour: #0a0b57;
+        --header-colour: #fff;
+        --responsive: 550px;
+        --image-blend-mode: screen;
+        --highlight-color-light: #005aff
+    }
+
+    .title-konami {
+        font-family: Impact, sans-serif !important;
+        font-weight: 900;
+        color: #3cf;
+        -webkit-text-stroke: 1.25px #009;
+        text-shadow: .35rem -.35rem 0 #009;
+        letter-spacing: -.15vw;
+        transform: skew(2deg, 2deg)
+    }
+
+    #konami-toast {
+        position: fixed;
+        bottom: 40px;
+        width: fit-content;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+        border-radius: .5rem;
+        background: #111;
+        border: #fff 1px solid;
+        z-index: 10000
+    }
+
+    #konami-toast p {
+        color: #fff;
+        text-align: center
+    }
+
+    canvas#ghost {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        width: 100%;
+        z-index: 10000;
+        pointer-events: none
+    }
+
+    .hidden {
+        display: none
+    }
+
+    body,
+    html {
+        max-width: 100%;
+        overflow-x: hidden
+    }
+
+    body {
+        margin: 0
+    }
+
+    ul {
+        margin: 0;
+        padding-inline-start: 20px
+    }
+
+    body.active {
+        position: fixed
+    }
+
+    .footer-inner,
+    .header-inner,
+    section {
+        max-width: 1200px;
+        padding: 2rem 1rem;
+        margin: 0 auto
+    }
+
+    .section--first {
+        padding-top: 6rem
+    }
+
+    header {
+        position: fixed;
+        z-index: 1;
+        width: 100%;
+        transition: background-color .2s ease-in-out 0s, box-shadow 250ms ease-in-out 0s
+    }
+
+    header.active {
+        background-color: var(--header-colour)
+    }
+
+    .header-inner {
+        display: grid;
+        grid-template-columns: 1fr 5fr
+    }
+
+    .header-inner>:first-child {
+        align-self: center
+    }
+
+    footer {
+        background-color: var(--text-colour)
+    }
+
+    footer a,
+    footer p {
+        color: var(--bg-colour);
+        max-width: unset;
+        margin-bottom: 1.5rem
+    }
+
+    footer a {
+        box-shadow: inset 0 -2px 0 0 var(--bg-colour)
+    }
+
+    .footer-center {
+        margin: 0 auto;
+        display: flex;
+        align-content: flex-start;
+        justify-content: space-around;
+        padding-top: 2rem;
+        margin: 0 2rem;
+
+        p {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+
+    .muted {
+        opacity: 50%
+    }
+
+    .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .icons {
+            display: flex;
+            column-gap: 15px;
+
+            a {
+                width: 30px;
+
+                svg {
+                    fill: #fff;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+
+    footer.dark {
+        background-color: var(--header-colour)
+    }
+
+    footer.dark a,
+    footer.dark p {
+        color: var(--text-colour)
+    }
+
+    footer.dark a {
+        box-shadow: inset 0 -2px 0 0 var(--text-colour)
+    }
+
+    ::-moz-selection {
+        background: var(--highlight-color-light);
+        color: #fff
+    }
+
+    ::selection {
+        background: var(--highlight-color-light);
+        color: #fff
+    }
+
+    .container {
+        display: grid
+    }
+
+    .thirds-2-1 {
+        grid-template-columns: 2fr 1fr;
+        grid-gap: 4rem
+    }
+
+    .grid-2-5-1 {
+        grid-template-columns: 2fr 5fr 1fr;
+        grid-gap: 4rem
+    }
+
+    .thirds-1-1-1 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 4rem
+    }
+
+    .thirds-1-2 {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        grid-gap: 4rem
+    }
+
+    .left {
+        text-align: right
+    }
+
+    .thirds-2-2-3 {
+        display: grid;
+        grid-template-columns: 2fr 2fr 3fr;
+        grid-gap: 2rem
+    }
+
+    .halves-2-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 4rem
+    }
+
+    .min-auto {
+        display: grid;
+        grid-template-columns: min-content auto;
+        grid-gap: 2rem;
+        align-items: baseline
+    }
+
+    .quarters {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-gap: 2rem
+    }
+
+    .quarters-2-1-1 {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        grid-gap: 4rem
+    }
+
+    .fixed-on-desktop {
+        position: fixed
+    }
+
+    .mt-10 {
+        margin-top: 1rem
+    }
+
+    .mt-20 {
+        margin-top: 2rem
+    }
+
+    .mt-40 {
+        margin-top: 4rem
+    }
+
+    .mb-0 {
+        margin-bottom: 0
+    }
+
+    .mb-10 {
+        margin-bottom: 1rem
+    }
+
+    .mb-20 {
+        margin-bottom: 2rem
+    }
+
+    .mb-40 {
+        margin-bottom: 4rem
+    }
+
+    .mt-80 {
+        margin-top: 8rem
+    }
+
+    .mb-80 {
+        margin-bottom: 8rem
+    }
+
+    .tall {
+        min-height: calc(100vh - 340px)
+    }
+
+    .centred {
+        text-align: center
+    }
+
+    nav {
+        justify-self: end
+    }
+
+    nav ul {
+        list-style-type: none
+    }
+
+    nav ul li {
+        float: left;
+        padding: unset;
+        margin: 0 4px;
+        border-radius: 4px
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: none;
+        padding: 8px 12px;
+        font-size: 1rem
+    }
+
+    nav ul li a:hover {
+        box-shadow: none
+    }
+
+    nav ul li a svg {
+        fill: var(--text-colour)
+    }
+
+    nav ul li:hover>a svg {
+        fill: var(--bg-colour)
+    }
+
+    nav ul .current {
+        background: var(--text-colour);
+        outline: solid 2px var(--text-colour)
+    }
+
+    nav ul .current a {
+        color: var(--bg-colour)
+    }
+
+    nav ul li:hover {
+        outline: solid var(--text-colour) 2px;
+        cursor: pointer
+    }
+
+    nav ul li:active {
+        outline: solid var(--text-colour) 2px;
+        cursor: pointer;
+        background: var(--text-colour)
+    }
+
+    nav ul li:active a {
+        color: var(--bg-colour)
+    }
+
+    .logo {
+        padding: 8px;
+        font-family: "Space Mono", monospace;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: none;
+        border: solid 2px var(--text-colour);
+        border-radius: 4px;
+        background: linear-gradient(to left, rgba(0, 0, 0, 0) 50%, var(--text-colour) 50%) right;
+        background-size: 200%;
+        transition: .3s ease-out
+    }
+
+    .logo:hover {
+        color: var(--bg-colour);
+        box-shadow: none;
+        transition: .1s ease-in;
+        background-position: left
+    }
+
+    header .switch {
+        display: inline-block;
+        height: 34px;
+        position: relative;
+        width: 60px;
+        margin-top: 8px;
+        margin-left: 8px
+    }
+
+    header .switch input {
+        opacity: 0;
+        margin: 0;
+        padding: 0
+    }
+
+    header .slider {
+        border: solid 2px var(--text-colour);
+        bottom: 0;
+        cursor: pointer;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        transition: .4s;
+        border-radius: 34px
+    }
+
+    header .switch input:focus+.slider {
+        outline: 5px auto -webkit-focus-ring-color;
+        outline: 5px auto Highlight
+    }
+
+    header .slider:before {
+        bottom: 1px;
+        left: 5px;
+        content: "🌓\00a0";
+        height: 26px;
+        width: 26px;
+        position: absolute;
+        transition: .4s;
+        border-radius: 50%;
+        color: var(--header-colour);
+        font-size: 18px
+    }
+
+    #dontmakemehaveanoutline:hover {
+        outline: 0
+    }
+
+    #dontmakemehaveanoutline:active {
+        outline: 0;
+        background: 0 0
+    }
+
+    #colour-toggle:checked+.slider:before {
+        transform: translateX(28px)
+    }
+
+    #mailto-link {
+        cursor: pointer
+    }
+
+    h1,
+    h2 {
+        font-family: Acorn, sans-serif;
+        line-height: 90%;
+        font-kerning: auto
+    }
+
+    h1 {
+        font-size: 5.5rem
+    }
+
+    h2 {
+        font-size: 4.5rem
+    }
+
+    h4 {
+        font-family: "Space Mono", monospace;
+        text-transform: uppercase;
+        padding-top: 1rem
+    }
+
+    .button,
+    a,
+    button,
+    input,
+    ol,
+    p,
+    textarea,
+    ul {
+        line-spacing: 1.25rem;
+        font-family: "Space Mono", monospace;
+        font-size: 1rem;
+        font-variant-ligatures: none
+    }
+
+    .lead,
+    .lead a {
+        font-size: 1.3rem;
+        letter-spacing: 95%
+    }
+
+    p.small,
+    p.small a {
+        letter-spacing: 120%;
+        font-size: .9rem;
+        line-height: 90%
+    }
+
+    .textbox p {
+        max-width: 66ch
+    }
+
+    .textbox .lead {
+        max-width: 45ch
+    }
+
+    .textbox li {
+        max-width: 66ch;
+        padding: 8px 0
+    }
+
+    .textbox .icons {
+        img {
+            width: 30%;
+        }
+    }
+
+    .middle {
+        align-self: middle
+    }
+
+    a {
+        text-decoration: none;
+        box-shadow: inset 0 -2px 0 0 var(--text-colour);
+        transition: box-shadow .3s ease-in-out
+    }
+
+    a:hover {
+        box-shadow: inset 0 -8px 0 0 #aac;
+        transition: box-shadow 80ms ease-in-out
+    }
+
+    h1 small {
+        font-family: "Space Mono", monospace;
+        font-size: 1rem;
+        letter-spacing: 0
+    }
+
+    #vanish-wordmark {
+        transform: scale(1.5, 1);
+        display: inline-block;
+        transform-origin: 0 0;
+        font-family: sans-serif;
+        font-weight: 700;
+        letter-spacing: .6rem;
+        font-size: 3rem
+    }
+
+    form {
+        max-width: 600px
+    }
+
+    .button,
+    button,
+    input,
+    textarea {
+        display: block;
+        padding: .8rem 1.2rem;
+        border: 1px solid var(--text-colour);
+        color: var(--text-colour);
+        background-color: unset;
+        width: 100%
+    }
+
+    a.button,
+    a.button:hover {
+        box-shadow: none
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--text-colour);
+        font-style: italic
+    }
+
+    input:active,
+    input:focus-within,
+    textarea:active,
+    textarea:focus-within {
+        outline: 3px solid var(--text-colour)
+    }
+
+    textarea {
+        min-height: 150px
+    }
+
+    a.button,
+    button {
+        width: unset;
+        text-align: center;
+        background-color: var(--text-colour);
+        color: var(--bg-colour);
+        margin: 0
+    }
+
+    a.button.small {
+        padding: .4rem .6rem;
+        display: inline;
+        background-color: var(--bg-colour);
+        color: var(--text-colour)
+    }
+
+    .button:active,
+    .button:focus,
+    .button:hover,
+    button:active,
+    button:focus,
+    button:hover {
+        filter: contrast(4.5);
+        cursor: pointer;
+        outline: 0
+    }
+
+    a.button.small:active,
+    a.button.small:focus,
+    a.button.small:hover {
+        background-color: var(--header-colour);
+        opacity: 100%
+    }
+
+    #pronounce {
+        display: unset !important;
+        color: unset !important;
+        border: none !important;
+        background: unset !important;
+        cursor: pointer !important;
+        padding: unset !important;
+        box-shadow: inset 0 -2px 0 0 var(--text-colour);
+        transition: box-shadow .3s ease-in-out
+    }
+
+    #pronounce:hover {
+        box-shadow: inset 0 -4px var(--text-colour);
+        transition: box-shadow 80ms ease-in-out;
+        color: unset !important
+    }
+
+    .g-recaptcha {
+        margin-left: .35rem
+    }
+
+    hr {
+        border-top: 4px double var(--text-colour);
+        margin: 4rem 0;
+        width: 65%;
+        border-bottom: 0;
+        border-left: 0;
+        border-right: 0
+    }
+
+    hr.left {
+        margin: 3rem 0
+    }
+
+    .circle-image-container {
+        background: var(--text-colour);
+        background-blend-mode: var(--image-blend-mode);
+        width: 300px;
+        height: 300px;
+        border-radius: 100%;
+        background-size: cover
+    }
+
+    .square-image-container {
+        background: var(--text-colour);
+        background-blend-mode: var(--image-blend-mode);
+        width: 100%;
+        height: 50%;
+        background-size: cover;
+        background-position-x: 50%;
+        background-position-y: 50%
+    }
+
+    .profile-image {
+        background-image: url(/assets/images/chris.jpg)
+    }
+
+    .talk-image {
+        background-image: url(/assets/images/talk.jpg)
+    }
+
+    .teach-image {
+        background-image: url(/assets/images/exphaus.jpg)
+    }
+
+    .right {
+        text-align: right
+    }
+
+    body {
+        background-color: var(--bg-colour);
+        transition: background-color .3s ease-in-out 0s
+    }
+
+    body.blank {
+        display: none
+    }
+
+    a,
+    body,
+    p {
+        color: var(--text-colour);
+        transition: background-color .3s ease-in-out 0s
+    }
+
+    #hamburger {
+        display: none
+    }
+
+    .icons a {
+        text-decoration: none;
+        box-shadow: none
+    }
+
+    .project-title__number {
+        display: inline
+    }
+
+    .project-title {
+        text-indent: -3rem;
+        margin-left: 3rem
+    }
+
+    .project-img {
+        width: 100%
+    }
+
+    .pushdown {
+        margin-top: 20px
+    }
+
+    .pushdown li,
+    .pushdown p {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        font-size: 1.2rem;
+        max-width: 66ch
+    }
+
+    .pushdown hr {
+        width: 60%;
+        margin: 40px auto
+    }
+
+    .project-img+p {
+        margin-top: 0;
+        text-align: center
+    }
+
+    .negative {
+        background-color: var(--text-colour);
+        width: 100%
+    }
+
+    .negative h2,
+    .negative li,
+    .negative p {
+        color: var(--bg-colour)
+    }
+
+    .negative hr {
+        border-color: var(--bg-colour)
+    }
+
+    .project-box {
+        border: solid 2px var(--text-colour);
+        padding: 2rem;
+        background-color: var(--bg-colour);
+        transition: all .3s ease-in-out;
+        min-height: 220px
+    }
+
+    .project-box:hover {
+        -moz-box-shadow: 0 10px 30px 0 rgba(0, 0, 0, .2);
+        -webkit-box-shadow: 0 10px 30px 0 rgba(0, 0, 0, .2);
+        box-shadow: 0 10px 30px 0 rgba(0, 0, 0, .2);
+        background-color: var(--header-colour)
+    }
+
+    a.project-box-wrapper {
+        text-decoration: none;
+        box-shadow: none
+    }
+
+    .project-box.no-shadow {
+        border: none
+    }
+
+    .project-box.no-shadow:hover {
+        box-shadow: unset;
+        -webkit-box-shadow: unset;
+        -moz-box-shadow: unset;
+        background-color: var(--bg-colour)
+    }
+
+    .project-box .description {
+        font-size: 1rem
+    }
+
+    .project-box .client {
+        text-transform: uppercase;
+        font-size: .9rem
+    }
+
+    .project-box .title {
+        font-size: 2rem;
+        letter-spacing: unset;
+        margin: 0
+    }
+
+    .show-on-mobile {
+        display: none
+    }
+
+    @media screen and (max-width:900px) {
+        .hide-below-900 {
+            display: none
+        }
+    }
+
+    @media screen and (max-width:768px) {
+
+        body,
+        html {
+            max-width: 100%
+        }
+
+        input,
+        textarea {
+            width: 80%;
+            margin-left: 0
+        }
+
+        .button,
+        button {
+            margin-left: 0
+        }
+
+        .cursor,
+        nav {
+            display: none
+        }
+
+        .container {
+            display: block
+        }
+
+        .footer-inner {
+            display: block
+        }
+
+        .footer-inner>div {
+            width: 100vw;
+            text-align: left
+        }
+
+        .footer-inner .small,
+        .footer-inner .small a {
+            letter-spacing: unset;
+            font-size: 1rem
+        }
+
+        .footer-inner,
+        .header-inner,
+        section {
+            margin-left: 2%;
+            margin-right: 2%
+        }
+
+        header {
+            margin-top: 0;
+            position: fixed;
+            padding: 1rem 0
+        }
+
+        .halves-2-2,
+        .min-auto {
+            display: block
+        }
+
+        .fixed-on-desktop {
+            position: unset
+        }
+
+        .hide-on-mobile {
+            display: none
+        }
+
+        .show-on-mobile {
+            display: block
+        }
+
+        .hide-below-900 {
+            display: unset
+        }
+
+        .title {
+            font-size: 2.2rem;
+        }
+
+        .lead,
+        .lead a {
+            font-size: 1.3rem
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            letter-spacing: -1px
+        }
+
+        .project-box {
+            margin: 2rem 0 2rem 0
+        }
+
+        .mobile-mt-0 {
+            margin-top: 0
+        }
+    }
+
+    .has-children>a::after {
+        content: " ↴"
+    }
+
+    .has-children.up-arrow-suffix>a::after {
+        content: " ⬘"
+    }
+
+    .submenu {
+        display: none
+    }
+
+    .submenu-expanded {
+        display: block;
+        position: fixed;
+        background-color: var(--header-colour);
+        z-index: 99;
+        padding: 0;
+        outline: solid 2px var(--header-colour);
+        border-radius: 4px
+    }
+
+    .submenu-expanded li {
+        float: left;
+        clear: left;
+        margin-left: 0;
+        width: 100%
+    }
+
+    .submenu-expanded li:hover {
+        outline: 0;
+        background-color: var(--text-colour)
+    }
+
+    .submenu-expanded li:active a,
+    .submenu-expanded li:hover a {
+        color: var(--bg-colour)
+    }
+
+    nav ul li:active ul li a {
+        color: unset
+    }
+
+    nav ul li.has-children:active {
+        background-color: var(--background-colour)
+    }
+
+    nav ul li.has-children:active a {
+        color: var(--text-colour)
+    }
+
+    nav ul li.has-children ul.submenu-expanded li:active a {
+        color: var(--bg-colour)
+    }
+
+    @media screen and (max-width:768px) {
+        nav.active {
+            display: block;
+            position: fixed;
+            top: 6rem;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-color: var(--header-colour);
+            overflow: hidden;
+            overflow-y: auto;
+            width: 100%
+        }
+
+        nav ul {
+            display: block;
+            padding-inline-start: 0
+        }
+
+        nav.active ul li {
+            padding: .2rem 0;
+            margin: 0 auto;
+            float: left;
+            clear: left;
+            width: 100%;
+            text-align: center
+        }
+
+        nav ul .current {
+            padding: unset
+        }
+
+        nav.active ul li:hover {
+            text-decoration: none
+        }
+
+        nav ul li:hover>a svg {
+            fill: var(--text-colour)
+        }
+
+        nav ul li.has-children ul li:hover,
+        nav.active>ul>li.no-children:hover {
+            background-color: var(--text-colour)
+        }
+
+        nav ul li.has-children ul li:hover a,
+        nav.active>ul>li.no-children:hover a {
+            color: var(--bg-colour)
+        }
+
+        nav ul li.has-children ul li:hover a svg,
+        nav.active>ul>li.no-children:hover a svg {
+            fill: var(--bg-colour)
+        }
+
+        nav ul li.has-children ul li:active a {
+            color: var(--header-colour) !important
+        }
+
+        nav ul li.has-children ul li:active a svg {
+            fill: var(--header-colour)
+        }
+
+        #hamburger {
+            position: fixed;
+            right: 2%;
+            display: block;
+            margin: -12px 40px;
+            z-index: 100;
+            -webkit-user-select: none;
+            user-select: none;
+            font-size: 2rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all ease .75s;
+            background: unset;
+            color: unset;
+            padding: unset;
+            border: none
+        }
+
+        #hamburger:after {
+            content: "\2715"
+        }
+
+        .active#hamburger:after {
+            content: "\2630"
+        }
+
+        .submenu {
+            display: block !important
+        }
+
+        nav ul li:hover {
+            outline: 0
+        }
+
+        nav>ul>li.has-children>a {
+            display: none
+        }
+
+        .submenu-expanded {
+            position: unset !important
+        }
+    }
+
+    :root {
+        --animate-duration: 1s;
+        --animate-delay: .5s;
+        --animate-repeat: 1
+    }
+
+    .animate__animated {
+        -webkit-animation-duration: 1s;
+        animation-duration: 1s;
+        -webkit-animation-duration: var(--animate-duration);
+        animation-duration: var(--animate-duration);
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both
+    }
+
+    @-webkit-keyframes fadeInUp {
+        from {
+            opacity: 0;
+            -webkit-transform: translate3d(0, 100%, 0);
+            transform: translate3d(0, 100%, 0)
+        }
+
+        to {
+            opacity: 1;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0)
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            -webkit-transform: translate3d(0, 100%, 0);
+            transform: translate3d(0, 100%, 0)
+        }
+
+        to {
+            opacity: 1;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0)
+        }
+    }
+
+    .animate__fadeInUp {
+        -webkit-animation-name: fadeInUp;
+        animation-name: fadeInUp
+    }
+
+    @media print,
+    (prefers-reduced-motion:reduce) {
+        .animate__animated {
+            -webkit-animation-duration: 1ms !important;
+            animation-duration: 1ms !important;
+            -webkit-transition-duration: 1ms !important;
+            transition-duration: 1ms !important;
+            -webkit-animation-iteration-count: 1 !important;
+            animation-iteration-count: 1 !important
+        }
+
+        .animate__animated[class*=Out] {
+            opacity: 0
+        }
+    }
+
+    @-webkit-keyframes fadeIn {
+        from {
+            opacity: 0
+        }
+
+        to {
+            opacity: 1
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0
+        }
+
+        to {
+            opacity: 1
+        }
+    }
+
+    .animate__fadeIn {
+        -webkit-animation-name: fadeIn;
+        animation-name: fadeIn
+    }
+
+    .animate__animated.animate__delay {
+        -webkit-animation-delay: var(--animate-delay);
+        animation-delay: var(--animate-delay)
+    }
+
+    .line-portrait {
+        stroke-dasharray: 5000;
+        stroke-dashoffset: 5000;
+        animation-duration: 10s;
+        animation-timing-function: ease-out;
+        animation-name: lineanimation;
+        animation-fill-mode: forwards
+    }
+
+    @keyframes lineanimation {
+        from {
+            stroke-dashoffset: 5000
+        }
+
+        to {
+            stroke-dashoffset: 1800
+        }
+    }
+
+    @media print,
+    (prefers-reduced-motion:reduce) {
+        .line-portrait {
+            animation-duration: 1ms !important;
+            transition-duration: 1ms !important;
+            animation-iteration-count: 1 !important
+        }
+    }
+
+    @font-face {
+        font-family: Acorn;
+        font-style: normal;
+        src: url(Acorn-SemiBold.woff2) format("woff2"), url(Acorn-SemiBold.eot) format("eot");
+        font-display: swap
+    }
+
+    @font-face {
+        font-family: "Space Mono";
+        font-style: normal;
+        font-weight: 400;
+        src: url(space-mono-v12-latin-regular.woff2) format("woff2"), url(space-mono-v12-latin-regular.woff) format("woff");
+        font-display: swap
+    }
+
+    @font-face {
+        font-family: "Space Mono";
+        font-style: italic;
+        font-weight: 400;
+        src: url(space-mono-v12-latin-italic.woff2) format("woff2"), url(space-mono-v12-latin-italic.woff) format("woff");
+        font-display: swap
+    }
+
+    @font-face {
+        font-family: "Space Mono";
+        font-style: normal;
+        font-weight: 700;
+        src: url(space-mono-v12-latin-700.woff2) format("woff2"), url(space-mono-v12-latin-700.woff) format("woff");
+        font-display: swap
+    }
+</style>
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="">
+<meta name="twitter:title" content="">
+<meta property="og:url" content="/">
+<meta name="description" property="og:description" content="Chris sordan personal website">
+<meta name="twitter:creator" content="@p44v9n">
+
+<!-- REPLACE -->
+<link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.png">
+
+<!-- Font prefetch -->
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,400i,700|EB+Garamond:800&display=fallback"
+    rel="stylesheet">
+
+<!-- REPLACE -->
+<!-- <link rel="prefetch" href="https://REPLACE.com/"><link rel="prefetch" href="https://REPLACE.com/"><link rel="prefetch" href="https://REPLACE.com/#/"><link rel="prefetch" href="https://REPLACE.com/contact"><link rel="prefetch" href="https://REPLACE.com/blog/"><link rel="prefetch" href="https://REPLACE.com/speaking/"><link rel="prefetch" href="https://REPLACE.com/teaching/"><link rel="prefetch" href="https://REPLACE.com/contact/"><link rel="prefetch" href="https://REPLACE.com/about/"></head> -->
+
+<body>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(() => {
+                updateColour();
+            }, 100)
+            function updateColour() {
+                if (localStorage.getItem("theme") == "dark") {
+                    document.documentElement.style.setProperty('--bg-colour', '#0a0b57');
+                    document.documentElement.style.setProperty('--text-colour', '#ff757d');
+                    document.documentElement.style.setProperty('--header-colour', '#00112a');
+                    document.documentElement.style.setProperty('--image-blend-mode', 'luminosity');
+                }
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Custom cursor
+
+            // const cursor = document.querySelector('.cursor');
+
+            // Follow mouse and fade in
+            // document.addEventListener('mousemove', e => {
+            //     cursor.setAttribute("style", "top: " + (e.pageY + 10) + "px; left: " + (e.pageX + 10) + "px;")
+            //     cursor.classList.add('visible');
+            // });
+
+            // Hide cursor on scroll in-place
+            // Keeping position prevents FOUC of it returning to (0,0)
+            // document.addEventListener('scroll', e => {
+            //     cursor.setAttribute("style", "top: " + (e.pageY + 10) + "px; left: " + (e.pageX + 10) + "px;")
+            //     cursor.classList.remove('visible');
+            // });
+
+            // if (localStorage.getItem('staticrypt-pass') !== null) {
+            //     cursor.classList.add('cursor-password');
+            // }
+
+            // load sounds
+
+            // var pronounce = new Audio("../assets/sounds/pronounce.m4a"); // buffers automatically when created
+
+            // Colour themes
+
+            // Find header and footer
+            let header = document.getElementsByTagName("header");
+            let footer = document.getElementsByTagName("footer");
+
+            // today's date for footer
+            let currentdate = new Date();
+            function isTodayJulySeventh() {
+                return currentdate.getDate() === 7 && currentdate.getMonth() === 6; // Concise check for July 7th; month is zero indexed
+            }
+            function isTodayWorldBicycleDay() {
+                return currentdate.getDate() === 3 && currentdate.getMonth() === 5;
+            }
+            function isTodayBiVisibilityDay() {
+                return currentdate.getDate() === 23 && currentdate.getMonth() === 8;
+            }
+            function isTodaySummerSolstice24() {
+                return (
+                    currentdate.getDate() === 20 &&
+                    currentdate.getMonth() === 5 &&
+                    currentdate.getFullYear() === 2024
+                );
+            }
+            const quotes = [
+                '"Character, like a photograph, develops in darkness." - Yousuf Karsh',
+                '"Pain is Knowledge rushing in to fill a void with great speed." - Seinfeld',
+                '"If the challenge we face doesn’t scare us, then it’s probably not that important." - Tim Ferriss',
+                '"Those who are dancing would be judged insane by those who could not hear the music." - Friedrich Nietzsche',
+                '"Life is too short to be busy." - Tim Kreider',
+                '"Luck is what happens when preparation meets opportunity" - Seneca',
+                '"Never forget why you’re really doing what you’re doing.." - Derek Sivers'
+            ];
+
+            // Get a quote based on the current day of the month
+            function getDailyQuote() {
+                // Select a quote based on the day of the month (1-31)
+                return quotes[currentdate.getDate() % quotes.length];
+            }
+
+            let dayString = "";
+            if (isTodayJulySeventh()) {
+                dayString = "my birthday";
+            }
+            if (isTodaySummerSolstice24()) {
+                dayString = "the Summer Solstice";
+            }
+            if (isTodayWorldBicycleDay()) {
+                dayString = "World Bicycle Day";
+            }
+            if (isTodayBiVisibilityDay()) {
+                dayString = "Bi Visiblity Day";
+            } else {
+                dayString = currentdate.toLocaleDateString("en-GB", {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                });
+            }
+            document.getElementById("date").innerHTML = dayString + '.';
+
+            document.querySelector("span.quote").innerHTML = `${getDailyQuote()}`;
+
+            // Finish loading dark mode theme
+            // (first part is in blockingscript.js to prevent FOUC)
+            setTimeout(() => {
+                updateColour2();
+            }, 100)
+
+
+
+            function sayMyName() {
+                //   pronounce.play();
+
+                // Track with analytics
+                window.fathom.trackGoal("WH8P0QOY", 0);
+            }
+
+            // Konami effect
+
+            function runKonami() {
+                // Update title on page to have Word Art style
+                document.getElementsByClassName("title")[0].classList.add("title-konami");
+
+                // Update bg with sky image
+                // document.getElementsByTagName('body')[0].classList.add('background-konami');
+
+                // Update cursor
+                // document.getElementsByClassName("cursor")[0].classList.add('cursor-konami');
+
+                document.getElementById("konami-toast").classList.remove("hidden");
+                ghostRender();
+            }
+
+            // Scroll to top
+
+            function scrollToTop() {
+                window.scroll({
+                    top: 0,
+                    left: 0,
+                    behavior: "smooth",
+                });
+            }
+
+            // Add class on page load if already scrolled
+
+            if (window.pageYOffset > 40) {
+                header[0].classList.add("active");
+            }
+
+            // Update class when scolling
+
+            window.onscroll = function () {
+                if (window.pageYOffset > 40) {
+                    header[0].classList.add("active");
+                } else if (!menu.classList.contains("active")) {
+                    header[0].classList.remove("active");
+                }
+            };
+
+            // Hamburger menu
+
+            let hamburger = document.getElementById("hamburger");
+            let menu = document.getElementById("menu");
+            let body = document.getElementsByTagName("body");
+            hamburger.onclick = function () {
+                // Add active classes to body, nav menu, header and hamburger icon
+                menu.classList.toggle("active");
+                hamburger.classList.toggle("active");
+                hamburger.setAttribute("aria-expanded", true);
+                body[0].classList.toggle("active");
+                if (!header[0].classList.contains("active")) {
+                    header[0].classList.add("active");
+                }
+            };
+
+            // Mailto Link Hover prompt
+            // This isn't working
+            // var mailto = document.getElementById('mailto-link');
+            // if (mailto.matches(':hover')) {
+            //     document.getElementsByClassName("cursor")[0].classList.add('cursor-copy');
+            // }
+
+            //TODO this code is redundant on mobile
+
+            let copyEmailToClipboard = function () {
+                var email = "REPLACE";
+                copyToClipboard(email);
+                // document.getElementsByClassName("cursor")[0].classList.add('cursor-copied');
+                // setTimeout(function(){
+                //     document.getElementsByClassName("cursor")[0].classList.remove('cursor-copied');
+                //  }, 1000);
+            };
+
+            function copyToClipboard(text) {
+                var dummy = document.createElement("input");
+                document.body.appendChild(dummy);
+                dummy.setAttribute("value", text);
+                dummy.select();
+                document.execCommand("copy");
+                document.body.removeChild(dummy);
+            }
+
+            // Quicklink
+
+            !(function (n, e) {
+                "object" == typeof exports && "undefined" != typeof module
+                    ? e(exports)
+                    : "function" == typeof define && define.amd
+                        ? define(["exports"], e)
+                        : e((n.quicklink = {}));
+            })(this, function (n) {
+                function e(n) {
+                    return new Promise(function (e, t, o) {
+                        (o = new XMLHttpRequest()).open("GET", n, (o.withCredentials = !0)),
+                            (o.onload = function () {
+                                200 === o.status ? e() : t();
+                            }),
+                            o.send();
+                    });
+                }
+                var t,
+                    o =
+                        (t = document.createElement("link")).relList &&
+                            t.relList.supports &&
+                            t.relList.supports("prefetch")
+                            ? function (n) {
+                                return new Promise(function (e, t, o) {
+                                    ((o = document.createElement("link")).rel = "prefetch"),
+                                        (o.href = n),
+                                        (o.onload = e),
+                                        (o.onerror = t),
+                                        document.head.appendChild(o);
+                                });
+                            }
+                            : e,
+                    i =
+                        window.requestIdleCallback ||
+                        function (n) {
+                            var e = Date.now();
+                            return setTimeout(function () {
+                                n({
+                                    didTimeout: !1,
+                                    timeRemaining: function () {
+                                        return Math.max(0, 50 - (Date.now() - e));
+                                    },
+                                });
+                            }, 1);
+                        },
+                    r = new Set();
+                function c(n, t, i) {
+                    if (
+                        !(i = navigator.connection) ||
+                        (!i.saveData && !/2g/.test(i.effectiveType))
+                    )
+                        return Promise.all(
+                            [].concat(n).map(function (n) {
+                                if (!r.has(n))
+                                    return (
+                                        r.add(n),
+                                        (t
+                                            ? function (n) {
+                                                return window.fetch
+                                                    ? fetch(n, { credentials: "include" })
+                                                    : e(n);
+                                            }
+                                            : o)(new URL(n, location.href).toString())
+                                    );
+                            })
+                        );
+                }
+                (n.listen = function (n) {
+                    if ((n || (n = {}), window.IntersectionObserver)) {
+                        var e = (function (n) {
+                            n = n || 1;
+                            var e = [],
+                                t = 0;
+                            function o() {
+                                t < n && e.length > 0 && (e.shift()(), t++);
+                            }
+                            return [
+                                function (n) {
+                                    e.push(n) > 1 || o();
+                                },
+                                function () {
+                                    t--, o();
+                                },
+                            ];
+                        })(n.throttle || 1 / 0),
+                            t = e[0],
+                            o = e[1],
+                            u = n.limit || 1 / 0,
+                            f = n.origins || [location.hostname],
+                            s = n.ignores || [],
+                            a = n.timeoutFn || i,
+                            l = new IntersectionObserver(function (e) {
+                                e.forEach(function (e) {
+                                    e.isIntersecting &&
+                                        (l.unobserve((e = e.target)),
+                                            r.size < u &&
+                                            t(function () {
+                                                c(e.href, n.priority)
+                                                    .then(o)
+                                                    .catch(function (e) {
+                                                        o(), n.onError && n.onError(e);
+                                                    });
+                                            }));
+                                });
+                            });
+                        return (
+                            a(
+                                function () {
+                                    (n.el || document).querySelectorAll("a").forEach(function (n) {
+                                        (f.length && !f.includes(n.hostname)) ||
+                                            (function n(e, t) {
+                                                return Array.isArray(t)
+                                                    ? t.some(function (t) {
+                                                        return n(e, t);
+                                                    })
+                                                    : (t.test || t).call(t, e.href, e);
+                                            })(n, s) ||
+                                            l.observe(n);
+                                    });
+                                },
+                                { timeout: n.timeout || 2e3 }
+                            ),
+                            function () {
+                                r.clear(), l.disconnect();
+                            }
+                        );
+                    }
+                }),
+                    (n.prefetch = c);
+            });
+
+            // Konami listener
+
+            var Konami = function (callback) {
+                var konami = {
+                    addEvent: function (obj, type, fn, ref_obj) {
+                        if (obj.addEventListener) obj.addEventListener(type, fn, !1);
+                        else if (obj.attachEvent) {
+                            obj["e" + type + fn] = fn;
+                            obj[type + fn] = function () {
+                                obj["e" + type + fn](window.event, ref_obj);
+                            };
+                            obj.attachEvent("on" + type, obj[type + fn]);
+                        }
+                    },
+                    removeEvent: function (obj, eventName, eventCallback) {
+                        if (obj.removeEventListener) {
+                            obj.removeEventListener(eventName, eventCallback);
+                        } else if (obj.attachEvent) {
+                            obj.detachEvent(eventName);
+                        }
+                    },
+                    input: "",
+                    pattern: "38384040373937396665",
+                    keydownHandler: function (e, ref_obj) {
+                        if (ref_obj) {
+                            konami = ref_obj;
+                        }
+                        konami.input += e ? e.keyCode : event.keyCode;
+                        if (konami.input.length > konami.pattern.length) {
+                            konami.input = konami.input.substr(
+                                konami.input.length - konami.pattern.length
+                            );
+                        }
+                        if (konami.input === konami.pattern) {
+                            konami.code(konami._currentLink);
+                            konami.input = "";
+                            e.preventDefault();
+                            return !1;
+                        }
+                    },
+                    load: function (link) {
+                        this._currentLink = link;
+                        this.addEvent(document, "keydown", this.keydownHandler, this);
+                        this.iphone.load(link);
+                    },
+                    unload: function () {
+                        this.removeEvent(document, "keydown", this.keydownHandler);
+                        this.iphone.unload();
+                    },
+                    code: function (link) {
+                        window.location = link;
+                    },
+                    iphone: {
+                        start_x: 0,
+                        start_y: 0,
+                        stop_x: 0,
+                        stop_y: 0,
+                        tap: !1,
+                        capture: !1,
+                        orig_keys: "",
+                        keys: [
+                            "UP",
+                            "UP",
+                            "DOWN",
+                            "DOWN",
+                            "LEFT",
+                            "RIGHT",
+                            "LEFT",
+                            "RIGHT",
+                            "TAP",
+                            "TAP",
+                        ],
+                        input: [],
+                        code: function (link) {
+                            konami.code(link);
+                        },
+                        touchmoveHandler: function (e) {
+                            if (e.touches.length === 1 && konami.iphone.capture === !0) {
+                                var touch = e.touches[0];
+                                konami.iphone.stop_x = touch.pageX;
+                                konami.iphone.stop_y = touch.pageY;
+                                konami.iphone.tap = !1;
+                                konami.iphone.capture = !1;
+                                konami.iphone.check_direction();
+                            }
+                        },
+                        touchendHandler: function () {
+                            konami.iphone.input.push(konami.iphone.check_direction());
+                            if (konami.iphone.input.length > konami.iphone.keys.length)
+                                konami.iphone.input.shift();
+                            if (konami.iphone.input.length === konami.iphone.keys.length) {
+                                var match = !0;
+                                for (var i = 0; i < konami.iphone.keys.length; i++) {
+                                    if (konami.iphone.input[i] !== konami.iphone.keys[i]) {
+                                        match = !1;
+                                    }
+                                }
+                                if (match) {
+                                    konami.iphone.code(konami._currentLink);
+                                }
+                            }
+                        },
+                        touchstartHandler: function (e) {
+                            konami.iphone.start_x = e.changedTouches[0].pageX;
+                            konami.iphone.start_y = e.changedTouches[0].pageY;
+                            konami.iphone.tap = !0;
+                            konami.iphone.capture = !0;
+                        },
+                        load: function (link) {
+                            this.orig_keys = this.keys;
+                            konami.addEvent(document, "touchmove", this.touchmoveHandler);
+                            konami.addEvent(document, "touchend", this.touchendHandler, !1);
+                            konami.addEvent(document, "touchstart", this.touchstartHandler);
+                        },
+                        unload: function () {
+                            konami.removeEvent(document, "touchmove", this.touchmoveHandler);
+                            konami.removeEvent(document, "touchend", this.touchendHandler);
+                            konami.removeEvent(document, "touchstart", this.touchstartHandler);
+                        },
+                        check_direction: function () {
+                            x_magnitude = Math.abs(this.start_x - this.stop_x);
+                            y_magnitude = Math.abs(this.start_y - this.stop_y);
+                            x = this.start_x - this.stop_x < 0 ? "RIGHT" : "LEFT";
+                            y = this.start_y - this.stop_y < 0 ? "DOWN" : "UP";
+                            result = x_magnitude > y_magnitude ? x : y;
+                            result = this.tap === !0 ? "TAP" : result;
+                            return result;
+                        },
+                    },
+                };
+                typeof callback === "string" && konami.load(callback);
+                if (typeof callback === "function") {
+                    konami.code = callback;
+                    konami.load();
+                }
+                return konami;
+            };
+            if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
+                module.exports = Konami;
+            } else {
+                if (typeof define === "function" && define.amd) {
+                    define([], function () {
+                        return Konami;
+                    });
+                } else {
+                    window.Konami = Konami;
+                }
+            }
+
+            // Instant page
+
+            let t, e;
+            const n = new Set(),
+                o = document.createElement("link"),
+                s =
+                    o.relList &&
+                    o.relList.supports &&
+                    o.relList.supports("prefetch") &&
+                    window.IntersectionObserver &&
+                    "isIntersecting" in IntersectionObserverEntry.prototype,
+                i = "instantAllowQueryString" in document.body.dataset,
+                r = "instantAllowExternalLinks" in document.body.dataset,
+                a = "instantWhitelist" in document.body.dataset;
+            let c = 65,
+                d = !1,
+                l = !1,
+                u = !1;
+            if ("instantIntensity" in document.body.dataset) {
+                const t = document.body.dataset.instantIntensity;
+                if ("mousedown" == t.substr(0, "mousedown".length))
+                    (d = !0), "mousedown-only" == t && (l = !0);
+                else if ("viewport" == t.substr(0, "viewport".length))
+                    (navigator.connection &&
+                        (navigator.connection.saveData ||
+                            navigator.connection.effectiveType.includes("2g"))) ||
+                        ("viewport" == t
+                            ? document.documentElement.clientWidth *
+                            document.documentElement.clientHeight <
+                            45e4 && (u = !0)
+                            : "viewport-all" == t && (u = !0));
+                else {
+                    const e = parseInt(t);
+                    isNaN(e) || (c = e);
+                }
+            }
+            if (s) {
+                const n = { capture: !0, passive: !0 };
+                if (
+                    (l ||
+                        document.addEventListener(
+                            "touchstart",
+                            function (t) {
+                                e = performance.now();
+                                const n = t.target.closest("a");
+                                if (!f(n)) return;
+                                h(n.href);
+                            },
+                            n
+                        ),
+                        d
+                            ? document.addEventListener(
+                                "mousedown",
+                                function (t) {
+                                    const e = t.target.closest("a");
+                                    if (!f(e)) return;
+                                    h(e.href);
+                                },
+                                n
+                            )
+                            : document.addEventListener(
+                                "mouseover",
+                                function (n) {
+                                    if (performance.now() - e < 1100) return;
+                                    const o = n.target.closest("a");
+                                    if (!f(o)) return;
+                                    o.addEventListener("mouseout", m, { passive: !0 }),
+                                        (t = setTimeout(() => {
+                                            h(o.href), (t = void 0);
+                                        }, c));
+                                },
+                                n
+                            ),
+                        u)
+                ) {
+                    let t;
+                    (t = window.requestIdleCallback
+                        ? (t) => {
+                            requestIdleCallback(t, { timeout: 1500 });
+                        }
+                        : (t) => {
+                            t();
+                        })(() => {
+                            const t = new IntersectionObserver((e) => {
+                                e.forEach((e) => {
+                                    if (e.isIntersecting) {
+                                        const n = e.target;
+                                        t.unobserve(n), h(n.href);
+                                    }
+                                });
+                            });
+                            document.querySelectorAll("a").forEach((e) => {
+                                f(e) && t.observe(e);
+                            });
+                        });
+                }
+            }
+
+            function m(e) {
+                (e.relatedTarget && e.target.closest("a") == e.relatedTarget.closest("a")) ||
+                    (t && (clearTimeout(t), (t = void 0)));
+            }
+
+            function f(t) {
+                if (
+                    t &&
+                    t.href &&
+                    (!a || "instant" in t.dataset) &&
+                    (r || t.origin == location.origin || "instant" in t.dataset) &&
+                    ["http:", "https:"].includes(t.protocol) &&
+                    ("http:" != t.protocol || "https:" != location.protocol) &&
+                    (i || !t.search || "instant" in t.dataset) &&
+                    !(
+                        (t.hash &&
+                            t.pathname + t.search == location.pathname + location.search) ||
+                        "noInstant" in t.dataset
+                    )
+                )
+                    return !0;
+            }
+
+            function h(t) {
+                if (n.has(t)) return;
+                const e = document.createElement("link");
+                (e.rel = "prefetch"), (e.href = t), document.head.appendChild(e), n.add(t);
+            }
+        })
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // from https://codepen.io/ksenia-k/pen/yLGxEKb?editors=1010
+            // from https://twitter.com/uuuuuulala/status/1709160701686689932
+
+            const canvasEl = document.querySelector("#ghost");
+
+            const mouseThreshold = .1;
+            const devicePixelRatio = Math.min(window.devicePixelRatio, 2);
+
+            const mouse = {
+                x: .5 * window.innerWidth,
+                y: .5 * window.innerHeight,
+                tX: .5 * window.innerWidth,
+                tY: .5 * window.innerHeight,
+                moving: false,
+                controlsPadding: 0
+            }
+
+            const params = {
+                size: .07,
+                tail: {
+                    dotsNumber: 25,
+                    spring: 1.2,
+                    friction: .2,
+                    maxGravity: 40,
+                    gravity: 25,
+                },
+                smile: .9,
+                mainColor: [.8, .8, .8],
+                // borderColor: [0,0,0],
+                isFlatColor: true,
+            };
+
+
+
+            const textureEl = document.createElement("canvas");
+            const textureCtx = textureEl.getContext("2d");
+            const pointerTrail = new Array(params.tail.dotsNumber);
+            let dotSize = (i) => params.size * window.innerHeight * (1. - .2 * Math.pow(3. * i / params.tail.dotsNumber - 1., 2.));
+            for (let i = 0; i < params.tail.dotsNumber; i++) {
+                pointerTrail[i] = {
+                    x: mouse.x,
+                    y: mouse.y,
+                    vx: 0,
+                    vy: 0,
+                    opacity: .04 + .3 * Math.pow(1 - i / params.tail.dotsNumber, 4),
+                    bordered: .6 * Math.pow(1 - i / pointerTrail.length, 1),
+                    r: dotSize(i)
+                }
+            }
+
+            let uniforms;
+            const gl = initShader();
+
+            window.addEventListener("resize", resizeCanvas);
+            resizeCanvas();
+
+            window.addEventListener("mousemove", e => {
+                updateMousePosition(e.pageX, e.pageY);
+            });
+            window.addEventListener("touchmove", e => {
+                updateMousePosition(e.targetTouches[0].pageX, e.targetTouches[0].pageY);
+            });
+            window.addEventListener("click", e => {
+                updateMousePosition(e.pageX, e.pageY);
+            });
+
+            let movingTimer = setTimeout(() => mouse.moving = false, 300);
+
+            function updateMousePosition(eX, eY) {
+                mouse.moving = true;
+                if (mouse.controlsPadding < 0) {
+                    mouse.moving = false;
+                }
+                clearTimeout(movingTimer);
+                movingTimer = setTimeout(() => {
+                    mouse.moving = false;
+                }, 300);
+
+                mouse.tX = eX;
+
+                const size = params.size * window.innerHeight;
+                eY -= .6 * size;
+                mouse.tY = eY > size ? eY : size;
+                mouse.tY -= mouse.controlsPadding;
+            }
+
+
+            function initShader() {
+                const vsSource = document.getElementById("vertShader").innerHTML;
+                const fsSource = document.getElementById("fragShader").innerHTML;
+
+                const gl = canvasEl.getContext("webgl") || canvasEl.getContext("experimental-webgl");
+
+                if (!gl) {
+                    alert("WebGL is not supported by your browser.");
+                }
+
+
+
+                function createShader(gl, sourceCode, type) {
+                    const shader = gl.createShader(type);
+                    gl.shaderSource(shader, sourceCode);
+                    gl.compileShader(shader);
+
+                    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                        console.error("An error occurred compiling the shaders: " + gl.getShaderInfoLog(shader));
+                        gl.deleteShader(shader);
+                        return null;
+                    }
+
+                    return shader;
+                }
+
+                const vertexShader = createShader(gl, vsSource, gl.VERTEX_SHADER);
+                const fragmentShader = createShader(gl, fsSource, gl.FRAGMENT_SHADER);
+
+                function createShaderProgram(gl, vertexShader, fragmentShader) {
+                    const program = gl.createProgram();
+                    gl.attachShader(program, vertexShader);
+                    gl.attachShader(program, fragmentShader);
+                    gl.linkProgram(program);
+
+                    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                        console.error("Unable to initialize the shader program: " + gl.getProgramInfoLog(program));
+                        return null;
+                    }
+
+                    return program;
+                }
+
+                const shaderProgram = createShaderProgram(gl, vertexShader, fragmentShader);
+                uniforms = getUniforms(shaderProgram);
+
+                function getUniforms(program) {
+                    let uniforms = [];
+                    let uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+                    for (let i = 0; i < uniformCount; i++) {
+                        let uniformName = gl.getActiveUniform(program, i).name;
+                        uniforms[uniformName] = gl.getUniformLocation(program, uniformName);
+                    }
+                    return uniforms;
+                }
+
+                const vertices = new Float32Array([-1., -1., 1., -1., -1., 1., 1., 1.]);
+
+                const vertexBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+                gl.useProgram(shaderProgram);
+
+                const positionLocation = gl.getAttribLocation(shaderProgram, "a_position");
+                gl.enableVertexAttribArray(positionLocation);
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+                gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+                const canvasTexture = gl.createTexture();
+                gl.bindTexture(gl.TEXTURE_2D, canvasTexture);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureEl);
+                gl.uniform1i(uniforms.u_texture, 0);
+
+                gl.uniform1f(uniforms.u_size, params.size);
+                gl.uniform3f(uniforms.u_main_color, params.mainColor[0], params.mainColor[1], params.mainColor[2]);
+                // gl.uniform3f(uniforms.u_border_color, params.borderColor[0], params.borderColor[0], params.borderColor[0]);
+                gl.uniform1f(uniforms.u_flat_color, 1);
+
+                return gl;
+            }
+
+            function updateTexture() {
+                textureCtx.fillStyle = 'black';
+                textureCtx.fillRect(0, 0, textureEl.width, textureEl.height);
+
+                pointerTrail.forEach((p, pIdx) => {
+                    if (pIdx === 0) {
+                        p.x = mouse.x;
+                        p.y = mouse.y;
+                    } else {
+                        p.vx += (pointerTrail[pIdx - 1].x - p.x) * params.tail.spring;
+                        p.vx *= params.tail.friction;
+
+                        p.vy += (pointerTrail[pIdx - 1].y - p.y) * params.tail.spring;
+                        p.vy *= params.tail.friction;
+                        p.vy += params.tail.gravity;
+
+                        p.x += p.vx;
+                        p.y += p.vy;
+                    }
+
+                    const grd = textureCtx.createRadialGradient(p.x, p.y, p.r * p.bordered, p.x, p.y, p.r);
+                    grd.addColorStop(0, 'rgba(255, 255, 255, ' + p.opacity + ')');
+                    grd.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+                    textureCtx.beginPath();
+                    textureCtx.fillStyle = grd;
+                    textureCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    textureCtx.fill();
+                });
+
+            }
+
+
+            function ghostRender() {
+                const currentTime = performance.now();
+                gl.uniform1f(uniforms.u_time, currentTime);
+
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+                if (mouse.moving) {
+                    params.smile -= .05;
+                    params.smile = Math.max(params.smile, -.1);
+                    params.tail.gravity -= 10 * params.size;
+                    params.tail.gravity = Math.max(params.tail.gravity, 0);
+                } else {
+                    params.smile += .01;
+                    params.smile = Math.min(params.smile, 1);
+                    if (params.tail.gravity > 30 * params.size) {
+                        params.tail.gravity = (30 + 9 * (1 + Math.sin(.002 * currentTime))) * params.size;
+                    } else {
+                        params.tail.gravity += params.size;
+                    }
+                }
+
+                mouse.x += (mouse.tX - mouse.x) * mouseThreshold;
+                mouse.y += (mouse.tY - mouse.y) * mouseThreshold;
+
+                gl.uniform1f(uniforms.u_smile, params.smile);
+                gl.uniform2f(uniforms.u_pointer, mouse.x / window.innerWidth, 1. - mouse.y / window.innerHeight);
+                gl.uniform2f(uniforms.u_target_pointer, mouse.tX / window.innerWidth, 1. - mouse.tY / window.innerHeight);
+
+                updateTexture();
+
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureEl);
+                requestAnimationFrame(ghostRender);
+            }
+
+            function resizeCanvas() {
+                canvasEl.width = window.innerWidth * devicePixelRatio;
+                canvasEl.height = window.innerHeight * devicePixelRatio;
+                textureEl.width = window.innerWidth;
+                textureEl.height = window.innerHeight;
+                gl.viewport(0, 0, canvasEl.width, canvasEl.height);
+                gl.uniform1f(uniforms.u_ratio, canvasEl.width / canvasEl.height);
+                for (let i = 0; i < params.tail.dotsNumber; i++) {
+                    pointerTrail[i].r = dotSize(i);
+                }
+            }
+        })
+    </script>
+    <script>
+        let footer = document.getElementsByTagName("footer");
+        let colourSwitch = document.getElementById("colour-toggle");
+        var darkmode = new Audio("darkmode.mp4"); // buffers automatically when created
+        var lightmode = new Audio("lightmode.mp4"); // buffers automatically when created
+        function colourToggle() {
+            if (
+                localStorage.getItem("theme") == null ||
+                localStorage.getItem("theme") == "light"
+            ) {
+                this.setColourTwo();
+                darkmode.play();
+            } else {
+                this.setColourOne();
+                lightmode.play();
+            }
+        }
+        function updateColour2() {
+            if (localStorage.getItem("theme") == "dark") {
+                footer[0].classList.add("dark");
+                colourSwitch.checked = false;
+                // document.getElementsByClassName("cursor")[0].classList.add('cursor-dark');
+            }
+        }
+
+        function setColourOne() {
+            document.documentElement.style.setProperty("--bg-colour", "#f5f4ec");
+            document.documentElement.style.setProperty("--text-colour", "#0a0b57");
+            document.documentElement.style.setProperty("--header-colour", "#fff");
+            document.documentElement.style.setProperty("--image-blend-mode", "screen");
+            // document.getElementsByClassName("cursor")[0].classList.remove('cursor-dark');
+            localStorage.setItem("theme", "light");
+            footer[0].classList.remove("dark");
+        }
+
+        function setColourTwo() {
+            document.documentElement.style.setProperty("--bg-colour", "#0a0b57");
+            document.documentElement.style.setProperty("--text-colour", "#ff757d");
+            document.documentElement.style.setProperty("--header-colour", "#00112a");
+            document.documentElement.style.setProperty(
+                "--image-blend-mode",
+                "luminosity"
+            );
+            // document.getElementsByClassName("cursor")[0].classList.add('cursor-dark');
+            localStorage.setItem("theme", "dark");
+            footer[0].classList.add("dark");
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const submenuparents = document.getElementsByClassName("has-children");
+
+            Array.from(submenuparents).forEach((submenuparent) => {
+                submenuparent.addEventListener('click', function (event) {
+
+                    const submenulist = submenuparent.lastElementChild;
+                    console.log(submenulist);
+
+                    if (submenulist.classList.contains('submenu-expanded')) {
+                        submenulist.classList.remove('submenu-expanded');
+                        submenuparent.classList.toggle('up-arrow-suffix');
+                    }
+                    else {
+                        var elems = document.querySelectorAll(".submenu-expanded");
+                        [].forEach.call(elems, function (el) {
+                            el.classList.remove("submenu-expanded");
+                        });
+
+                        Array.from(submenuparents).forEach((submenuparent) => {
+                            submenuparent.classList.remove('up-arrow-suffix');
+                        })
+
+                        submenulist.classList.add('submenu-expanded');
+
+                        submenuparent.classList.toggle('up-arrow-suffix');
+                    }
+                })
+            });
+        });
+    </script>
+
+
+    <div class="cursor"></div>
+
+
+    <div id="konami-toast" class="animate__animated animate__fadeInUp hidden">
+        <p>You unravelled the spectral enigma! Refresh to reset</p>
+    </div>
+
+    <header>
+        <div class="header-inner">
+            <div>
+                <a class="logo" href="/"><strong>chris</strong>/sordan</a>
+            </div>
+            <button id="hamburger" class="active" aria-label="Main menu" aria-expanded="false" role="button"></button>
+            <nav id="menu" aria-label="Main menu">
+                <ul>
+                    <li class="has-children">
+                        <a href="#/">About Me</a>
+                        <ul class="submenu">
+                            <li><a href="/about-recruiters.html">For recruiters</a></li>
+                            <li><a href="/about-friends.html">For friends</a></li>
+                            <li><a href="/about-me.html">For me 🔒</a></li>
+                            <li><a href="/porfolio.html">Portfolio 🔒</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-children">
+                        <a href="#/">Writing</a>
+                        <ul class="submenu">
+                            <li><a href="/blog/4-bullet-sunday.html">4 Bullet Sunday</a></li>
+                            <li><a href="/blog/freeform-blogs.html">Freeform blogs</a></li>
+                        </ul>
+                    </li>
+                    <!--
+                    <li class="has-children">
+                        <!-- <a href="#/">Resources</a> 
+                        <ul class="submenu">
+                            <li>
+                                <a href="https://www.youtube.com/p44v9n/" target="_blank" rel="noreferrer">YouTube
+                                    tutorials
+                                    <svg height="14" width="14" viewBox="0 0 451.111 451.111"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="m386.667 386.667h-322.223v-322.223h161.111v-64.444h-225.555v451.111h451.111v-225.555h-64.444z">
+                                        </path>
+                                        <path
+                                            d="m290 0v64.444h51.103l-138.329 138.33 45.564 45.564 138.329-138.329v51.103h64.444v-161.112z">
+                                        </path>
+                                    </svg></a>
+                            </li>
+                            <li>
+                                <a href="https://www.figma.com/community/file/910091288018885569/iphone-sizes-incl-iphone-15/"
+                                    target="_blank" rel="noreferrer">iPhone sizes in Figma
+                                    <svg height="14" width="14" viewBox="0 0 451.111 451.111"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="m386.667 386.667h-322.223v-322.223h161.111v-64.444h-225.555v451.111h451.111v-225.555h-64.444z">
+                                        </path>
+                                        <path
+                                            d="m290 0v64.444h51.103l-138.329 138.33 45.564 45.564 138.329-138.329v51.103h64.444v-161.112z">
+                                        </path>
+                                    </svg></a>
+                            </li>
+                            <li>
+                                <a href="https://designsystemcanvas.com/" target="_blank" rel="noreferrer">Design System
+                                    Canvas
+                                    <svg height="14" width="14" viewBox="0 0 451.111 451.111"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="m386.667 386.667h-322.223v-322.223h161.111v-64.444h-225.555v451.111h451.111v-225.555h-64.444z">
+                                        </path>
+                                        <path
+                                            d="m290 0v64.444h51.103l-138.329 138.33 45.564 45.564 138.329-138.329v51.103h64.444v-161.112z">
+                                        </path>
+                                    </svg></a>
+                            </li>
+                        </ul>
+                    </li>
+                -->
+                
+                    <li class="no-children">
+                        <a href="/contact.html">Contact</a>
+                    </li>
+
+                    <li id="dontmakemehaveanoutline">
+                        <label for="colour-toggle" class="switch">
+                            <input type="checkbox" checked="" aria-checked="mixed" aria-label="Toggle for dark mode"
+                                tabindex="0" id="colour-toggle" onclick="colourToggle()">
+                            <div class="slider"></div>
+                        </label>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+
+    <section class="section--first">
+        <div class="container tall">
+            <div class="textbox halves-2-2">
+                <div>
+                    <h1 class="title">Experience</h1>
+                    <ol class="job-list">
+                        <li>
+                            <span class="job-number">05</span>
+                            <div class="job-details">
+                                <span class="job-title">Solutions Architect || <span style="color: #EF923B;">Amazon Web Services</span></span>
+                                <span class="job-dates">August 2022 - <span style="color: #373ae4;">Present</span></span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="job-number">04</span>
+                            <div class="job-details">
+                                <span class="job-title">Associate Solutions Architect || <span style="color: #EF923B;">Dell Technologies</span></span>
+                                <span class="job-dates">Oct 2019 - July 2022</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="job-number">03</span>
+                            <div class="job-details">
+                                <span class="job-title">Student Technology Support Technician || <span style="color: #EF923B;">Emory University</span></span>
+                                <span class="job-dates">December 2017 - May 2019</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="job-number">02</span>
+                            <div class="job-details">
+                                <span class="job-title">Digital Mapping IT Technician || <span style="color: #EF923B;">Emory University</span></span>
+                                <span class="job-dates">August 2017 - December 2017</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="job-number">01</span>
+                            <div class="job-details">
+                                <span class="job-title">Mobile Developer Intern (IOS & Android) || <span style="color: #EF923B;">News Corp</span></span>
+                                <span class="job-dates">May 2018 - August 2018</span>
+                            </div>
+                        </li>
+                    </ol>
+                    <ul>
+                        <li>
+                            I’ll keep tech bullet points brief because you can just read my resume for that. In my
+                            current role, I act as a technical advisor for Enterprise AWS accounts to guide them in
+                            achieving their business & technical Nirvana. The guidance involves architecture reviews,
+                            executive visioning sessions, demos/PoCs, cost optimization techniques, product feature
+                            launches, GenAI use cases and more GenAI use cases.
+                        </li>
+                        <li>In May 2019, I graduated from Emory University with a B.S in Computer Science and
+                            Mathematics. I am fond of the city of Atlanta but I had to leave post graduation because the
+                            southern food was just too good and I was at risk of having to increase my waist pant size
+                            (for a second time) to accomodate. </li>
+                        <li>At Emory, I must have set the school record for how many times one can change majors in a
+                            single year. I finally decided on Computer Science after signing up for Emory’s first ever
+                            hackathon during my sophomore year. I'm pretty sure we came in dead last during the judging,
+                            but I loved the collaborative nature of being on a development team to turn an idea into a
+                            working prototype within 24 hours.</li>
+                        <li>During my degree, I took a variety of Computer Science courses such as: Artificial
+                            Intelligence (before it was cool), Assembly Programming (who doesn’t like C), Discrete
+                            Structures (I discreetly tried to hide my grade from this class from my parents). I always
+                            enjoying the architecture and theory of the concepts I was learning versus the actual
+                            coding. This is most definitely why I am a Solutions Architect today. </li>
+                        <li>Growing up, I've held a lot of random non-tech jobs (Mediterranean sandwich shop worker,
+                            youth basketball fill-in coach, healthcare call center agent, door-to-door solar panel
+                            salesman) that I'd be remiss if I didn't mention here. These roles were crucial in all
+                            aspects of my development and truly showed me the value of customer obsession and being a
+                            team player. These roles also gave me some core memories that I'll probably write a book
+                            about one day (working on Easter Sunday as the only sandwich shop open on campus, coaching
+                            my high school prom dates' brother to victory, spam calling every family member in my
+                            contacts trying to sell Solar). </li>
+                    </ul>
+                </div>
+                <div><!-- 
+                    <div class="mt-40">
+                        <svg class="hide-on-mobile" version="1.1" id="portrait-container"
+                            xmlns="#" xmlns:xlink="#" x="0px"
+                            y="0px" width="300" height="300" xml:space="preserve">
+                            <path class="line-portrait"
+                                d="M44.14,285.36s10.73-3.87,16.53-2.79,14.81,4.51,20,4.08,14.36-2.16,18.9-10.56c2.19-4.07,1.59-8.95,3.63-13.12a34.09,34.09,0,0,1,9.77-11.72c2.85-2.28,5.87-4.36,8.52-6.88,3-2.81,5.09-7.78,6.26-10.8,1.38-3.58,3-7,5.8-9.74a22.89,22.89,0,0,1,26-3.65c7.28,3.58,12,9.53,14.77,17A45.11,45.11,0,0,1,176.71,252c.1,4-.2,8-.25,12a86.84,86.84,0,0,0,.9,14.94c.43,2.74.83,5.48,1.22,8.23.42,3,1,6,1.16,9a29.85,29.85,0,0,1-.6,6.85,13.61,13.61,0,0,1-2.67,6.27c-2.19,2.69-5.44,3.84-8.54,1.49a25.35,25.35,0,0,1-3.94-3.51,23.56,23.56,0,0,0-11.9-7.49c-3.73-1-7.53-.72-11.29-1.17A9.11,9.11,0,0,1,134,295a11.25,11.25,0,0,1-1.94-6.55c0-3.46.29-6.91.23-10.37-.06-4-.36-7.92-.58-11.88a27.24,27.24,0,0,0-2.43-9.91c-1.56-3.45-6.89-13.2-7-13.41a31.49,31.49,0,0,1-4.81-13.12A17,17,0,0,1,121,217.12a26.91,26.91,0,0,1,9.46-7.59c5.4-2.66,10.91-5.09,16.44-7.49a44.77,44.77,0,0,1,13.85-3.61,32.71,32.71,0,0,1,9.45.49c6.28,1.29,11.19,4.43,14.44,10,1.26,2.15,2.15,4.52,3.41,6.68,1.05,1.81,3.16,5.64,9.4,9.63a91.35,91.35,0,0,1,9,4.92c4.41,3,7,7.45,8.71,12.45a45.17,45.17,0,0,1,2.18,10.05,22.22,22.22,0,0,0,1.23,5.32,3.47,3.47,0,0,0,3.15,2.42,3.6,3.6,0,0,0,3.22-2.08,23.91,23.91,0,0,0,2.26-6.57c1.58-6.14,5.25-10.75,10.35-14.34a62.82,62.82,0,0,0,5.32-4c4.78-4.17,6.14-8.5,3.79-14.75-1.06-2.82-2.53-5.49-3.76-8.25s-2.48-5.77-2.44-9c.06-5.33,2.86-8.43,7.91-9.29.5-.09,1-.11,1.52-.16,0,0,10.82,2.11,14.48,2.37,6,.44,12.76,3.9,18.27,6.78A40.93,40.93,0,0,1,300,217.72a36.71,36.71,0,0,1,4.35,12.51,42.65,42.65,0,0,1,.3,9.58c-.44,5.05-2.17,9.61-6.15,13.15a25.5,25.5,0,0,1-8.86,4.84c-3.81,1.33-7.71,2.42-11.4,4a40.57,40.57,0,0,0-19.4,17.31c-1.74,3-3.7,6-6.69,7.92a7.85,7.85,0,0,1-6.69,1.28,1.26,1.26,0,0,1-1-1.71c.34-1.54.83-3,1.19-4.58,1.16-4.84,3.81-9.09,5.47-13.72a36.6,36.6,0,0,0,2.09-7.16c.62-4.48-1.87-8-3.44-12.19a27.48,27.48,0,0,1-1-9.59c.39-3.31,2.52-6.17,3.61-9.31a47.18,47.18,0,0,0,3.07-15.85c0-2.08.13-4.17,0-6.24a50.6,50.6,0,0,0-1.08-7.46L251.54,192a16.47,16.47,0,0,1-.14-2c.16-3,2.21-5.11,5.63-3.21a13.51,13.51,0,0,1,4.4,4.59c.48.71.82,1.52,1.23,2.28l6.73,12.79a135.85,135.85,0,0,1,5.68,18.16,7.43,7.43,0,0,1-3.45,8.33c-2.57,1.57-5.34,2.82-8.05,4.15a39,39,0,0,0-13.1,10.36l-1.24,1.51a62.76,62.76,0,0,0-10.12,18c-2.64,7-4.82,14.21-7.23,21.31-.73,2.16-1.18,4.45-2.74,6.25a8.81,8.81,0,0,1-1.37,1.36c-2.62,2-4.78.58-6-1.65a34,34,0,0,1-3-9.16c-.59-3-.87-6.09-1.25-9.14-.33-2.59-.55-5.19-1-7.77a7.87,7.87,0,0,0-2.26-3.51,3.78,3.78,0,0,0-4.11-.78c-1.35.58-2.39,2.33-2,3.52a2.84,2.84,0,0,0,3.2,2,5.76,5.76,0,0,0,3.34-4.12,36.64,36.64,0,0,0-.88-9.61,37.37,37.37,0,0,0-9-17.06c-3.12-3.34-6.28-6.65-8.51-10.68-.78-1.41-1-3.25-2.08-4.33a10.1,10.1,0,0,1-2.71-5,32.09,32.09,0,0,0-1.78-4.58,31.88,31.88,0,0,1-2.44-16.92c.14-1,.17-2,.32-3a21,21,0,0,0-.29-8.85c-1.05-3.85-3.48-6.86-5.84-9.88A40.09,40.09,0,0,1,174,159.81a59.06,59.06,0,0,1-1.45-10.22,50.82,50.82,0,0,1,.27-5.64s.11-4.82.29-6.55c.35-3.35.83-6.7.87-10.06.05-3.65-.35-7.31-.55-11l.31-.61a3.33,3.33,0,0,1-.29-1.22c.41-2.24.81-4.49,1.38-6.7s1.28-4.18,1.95-6.25a17.4,17.4,0,0,0,.76-6.41V95c.21-2,.86-4.14.5-6.08-.48-2.64-.9-5.28-1.29-7.94A27.58,27.58,0,0,1,177,69.57a3.79,3.79,0,0,0-.13-1.36,4.59,4.59,0,0,0-1.36.32c-2.37,1.44-1.41-1.44-3.16.7-1,1.19-6.42,6.9-5.22,8.73l4.66-4.18c-.15-.51-6.86-.76-6.75-1.2,1.62-6.08,6.65-10.61,10.74-15.53a34.94,34.94,0,0,1,14.66-10.92c1.72-.65,3.55-1,5.32-1.55A18.36,18.36,0,0,0,205,38.34l1.47-2,2.41.75c3.53,1.36,7,3,10.53,4.22a25.3,25.3,0,0,0,6.23,1.23c3.34.27,6.71.12,10,.38a20,20,0,0,1,12.62,5.78c2.9,2.79,5.19,6.05,5.61,10.19a17.74,17.74,0,0,1-.2,6.22c-.66,2.47-2.85,4.49-6.61,3.23a80.81,80.81,0,0,1-15.39-6.85,34.8,34.8,0,0,0-12.79-4.57,17.43,17.43,0,0,0-9.11,1,23.23,23.23,0,0,0-5.33,3.47c-2.1,1.66-4.53,3.49-6.74,4.19-1.88.6-6.63.2-7.91.2s-4.79-.78-7.46,0c-.56.17-1.11.42-1.68.59a8.88,8.88,0,0,1-1.52.3c-.76.08-.91-.11-.6-.75a4.48,4.48,0,0,1,.6-.91c2.06-2.56,5.63-4.46,7.61-5.79a26.41,26.41,0,0,0,2.12-1.7c1.25-1.18,2.43-2.45,3.68-3.63a29.31,29.31,0,0,1,3.82-3.33c2.93-1.92,9.74-2.23,11.56,2.86.53,1.5.86,3.07,1.37,4.58.59,1.73,1.56,4.09-2.6,6.85-1.82,2.24-4.4,3.25-7,4.29a96.73,96.73,0,0,0-10,4.31c-4.41,2.36-7.34,6.19-9.33,10.76-.67,1.54-1.52,3-2.13,4.57-1.24,3.26-3.81,9.86-4.21,13.28a5,5,0,0,0,1,3.79c1.23,1.15,4.41,1.81,6.54,1.65,3.74-.29,7.4-.24,10.82,1.56,4.23,2.22,6.95,5.47,6.84,10.51a11.11,11.11,0,0,1-2.57,5.94c-1,1.09-2.47,1.26-3.81,1.45h-.46a4.67,4.67,0,0,0-.3-5c-.91-1.5-4.36-.87-4.36-.87-2.61.13-4.31,1.22-6.44,3-.38.32-.85,1.11-.72,1.31a2.55,2.55,0,0,0,1.47.93c2.35.49,4.72,1.58,6.6.62a4.36,4.36,0,0,1-1-5c.77-1.48,3.84-.55,3.84-.55,5,1.12,6.21,4.91,7.39,8.82a10.36,10.36,0,0,1-.73,8.06,16.18,16.18,0,0,1-11.71,8.56A17.28,17.28,0,0,1,173,143.76a17.89,17.89,0,0,1-7.42-11.4c-.79-3.92-.79-7.9,1.42-11.59a9.36,9.36,0,0,1,5.81-4.45c3.95-1.15,7.89-.79,11.9-.63s7.09,1.79,10.21,3.87c2.19,1.46,4.59,2.46,7.29,2a17.77,17.77,0,0,0,4-1.21c2.78-1.24,5.58-.68,8.38-.27.83.12,1.62.46,2.44.6a10.55,10.55,0,0,0,6.4-.76,14.16,14.16,0,0,1,6.7-2.28c2,0,4.07-.09,6.09,0a32.27,32.27,0,0,1,5.48.62c3.54.81,6.89,2.23,8.79,5.49a20.3,20.3,0,0,1,2.3,5.34l.19,0c.31-.41.64-.8.91-1.22.78-1.17,2.44-1.22,3.84-.28,1.18.79,1.16,2.69.39,3.82-1.24,1.84-2.73,1.39-4.53.73l-.42-.18a11.75,11.75,0,0,1-.11,1.86,18.49,18.49,0,0,1-2.54,7.75c-3.91,6-9.5,9.21-16.73,9-3.4-.12-5.69-1.58-6.71-5.29a28.86,28.86,0,0,0-2.69-6.93,10.51,10.51,0,0,1-1.38-3.78c-.82-5.67,2.08-9.34,6.54-11.8a4.57,4.57,0,0,1,3.78-.65l2.76,0a2,2,0,0,1,1.79,1.19,6.94,6.94,0,0,1,.6,2.59,4.19,4.19,0,0,1-1.09,2.9,5.3,5.3,0,0,0,1.43.14,49.49,49.49,0,0,0,5,.12,6,6,0,0,0,2-.87,6.15,6.15,0,0,0-.93-1.65c-1.1-1.13-3.64-2.2-5.18-3.17a9.58,9.58,0,0,0-3.95-1.25l-2.43,0c-1.84,1.55-1.63,4.28-.68,5.18a12,12,0,0,0,2,1.37,2.42,2.42,0,0,0-.76,0c-3.3.73-7.65.35-9.75-.92a6.55,6.55,0,0,1-2.44-2.7,10.61,10.61,0,0,1-.81-4c0-1.44,1.31-2.81,2.06-3.69a12,12,0,0,1,8.66-3.94,52.07,52.07,0,0,1,8.83,0A40.9,40.9,0,0,1,254,116.66a40.3,40.3,0,0,0,3.81,1.52c.94.33,1.63-.38,1.35-1.35a2.89,2.89,0,0,0-.61-1.21c-3.16-3.37-6.41-6.63-11.25-7.48a41.53,41.53,0,0,0-5.49-.88c-3.7-.13-7.42.08-11.12-.06-7.29-.28-11.47,4.18-13.09,10.09a19.13,19.13,0,0,0-.62,3.19c0,.42,0,1.22,0,1.68,0,2.81,0,5.62,0,8.43a13,13,0,0,0,2,7c1.3,2.06,2.88,3.95,4.1,6s2.2,3.94,1.64,6.55c-.69,3.23-2.86,4.63-5.57,5.43-3.76,1.11-7.63,1.82-11.3,3.31a4.37,4.37,0,0,1-4.09-.66,6.74,6.74,0,0,1-2.58-4.29c-.84-3.78-.13-7.51.83-11.11,1.38-5.24,3.22-10.37,4.79-15.56.75-2.47,2.09-6,2.46-8.08a61.27,61.27,0,0,0,.55-11.73c-.1-5.29-.61-10.59.24-15.85a49.76,49.76,0,0,1,3.19-11.58c1.62-3.8,3.45-7.51,5.14-11.29.87-1.92,1.94-3.86,1.07-6.09-.72-1.84-1.54-3.65-2.27-5.49s-3.56-3.81-6.87-3.93c-.83,0-2.49-.16-3.34-.11a13.51,13.51,0,0,0-5,1c-3.61,1.65-6.08,4.56-8.08,7.9-.7,1.16-1.2,2.46-2,3.57-1.5,2.11-5,5.63-8.23,6.3a5.33,5.33,0,0,1-1.67-.13c.2-.45.39-.92.61-1.37l2.28-4.57.82-1.19a26.22,26.22,0,0,0,1.46-4.3c1.17-4.07-1-7.27-2.58-10.82-.79-1.74-1.64-5.13-.79-7.63,1.27-3.77,4-5.93,7.5-7.29a15.38,15.38,0,0,1,8.36-.55s4.79,2.55,6.89,2.22,2.85-1.91,3.79-2.58c2.75-2,6.48-.71,9.74-.17,3,.51,6,1.27,9.14,1.06,2.59-.17,5.18-.43,7.77-.6a15.13,15.13,0,0,1,13,5.48A110.11,110.11,0,0,1,262,56.48a42.62,42.62,0,0,1,5.16,13,13.16,13.16,0,0,1,0,3.2c-.21,4.2-1.66,16.76-1.66,16.76-.43,2.17-.83,4.36-1.05,6.56a51.17,51.17,0,0,0-.3,7c.09,2.58.46,5.15,2.09,7.32,1.06,1.39,2.25,1.94,3.36,1.53s1.76-1.6,1.83-3.2c.28-5.95.62-11.89.9-17.84.14-2.94.38-5.9.27-8.83a10.61,10.61,0,0,0-3.93-8.38s-3.12-2.1-6.2-.68a4.83,4.83,0,0,0-3,4.18,21.49,21.49,0,0,0,.94,6.24A17.62,17.62,0,0,1,260,92a25.83,25.83,0,0,0-.91,10,37.3,37.3,0,0,0,2.95,10.68,25.28,25.28,0,0,1,2.37,8.24,14.69,14.69,0,0,1-.87,4.4,6.58,6.58,0,0,1-.74,1.38c-1.22,2.39-.37,3.62,1.83,5.34,3.09,2.41,4.51,9.32,1.82,13.25-1.24,1.82-2.6,3.59-3,5.8a11.33,11.33,0,0,0-.12,4.1,2.88,2.88,0,0,0,2.22,2.58,3.28,3.28,0,0,0,3.61-1.67,87.52,87.52,0,0,0,4-9.36c1.18-3.06,2.33-6.13,3.48-9.2s2.34-6,2.11-9.31c-.19-2.86-1.34-6.24-4.83-7-2.22-.51-3.7-.13-5.14,2.18a46.31,46.31,0,0,0-3.08,6.38A52,52,0,0,0,263,140a61.62,61.62,0,0,0-.64,6.24c-.69,7.18-1.94,14.18-4.82,20.91A62.88,62.88,0,0,1,240.45,190a59.6,59.6,0,0,0-11,12.3,17.65,17.65,0,0,1-5.29,5.21,15.35,15.35,0,0,1-10.21,2.25,74.72,74.72,0,0,1-9.58-1.41c-3.27-.79-6.13-2.35-7.21-6-.84-2.88.27-5.7,3.07-6.45a20.12,20.12,0,0,1,7.17-.33,22.89,22.89,0,0,1,7.45,1.62c2.21,1,1.23,4.19-2.77,4.16-2.36,0-6.09-.65-5.62-2.9.36-1.77,4.6-4.07,4.7-5.86.24-3.9-1.08-7.2-5.44-8.52a18.08,18.08,0,0,1-11-8.68c-2.13-3.72-4.63-7.23-7-10.85a19.45,19.45,0,0,1-.93-1.82,14.91,14.91,0,0,1,2-.29c2.74,0,5.48,0,8.22,0a18.15,18.15,0,0,1,8.21,1.56c2.65,1.29,5.23.79,7.78-.06,3.41-1.13,6.8-.78,10.21-.12,4.28.84,8.55,1.65,12.95,1.06.81-.1,2.67-.2,3.49-.3,0,0-2.22,2.63-3.35,3.64-.44.39-1.07.56-1.5.94-2.26,2-4.56,4-6.69,6.11-1.84,1.82-3.4,3.92-5.22,5.75-2.68,2.68-6.69,2.59-8.58-.4a5.74,5.74,0,0,0-2.69-1.69c-3.17-1.29-6.5-2.23-9.55-3.76a46.16,46.16,0,0,1-6.71-4.68,1.69,1.69,0,0,1-.57-1.47,1.54,1.54,0,0,1,1.76-1.09c.46.07.93.05,1.37.16,2.75.7,5.46,1.56,8.24,2.1a31.16,31.16,0,0,0,14-.57c1.7-.45,3.3-1.28,5.18-1.12,1,.08,1.7.47,1.91,1.28a2.35,2.35,0,0,1-.58,1.78,10.19,10.19,0,0,1-2.1,1.55,23.36,23.36,0,0,1-7.31,2.75"
+                                transform="translate(-34.23 -30)"
+                                style="fill:none;stroke:var(--text-colour);stroke-linecap:round;stroke-linejoin:round;stroke-width:1px">
+                            </path>
+                        </svg>
+                    -->
+                    </div>
+                    <h1>Certifications</h1>
+                    <div class="icons">
+                        <img src="https://s3-alpha-sig.figma.com/img/20c0/8189/195c1f904cf11d1d03b84433f5103ea0?Expires=1731283200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=NCGhuIIodKnpDkH7mNByg4qgjb~yhSSvTTzHVXRINBbMFNk5fJybBAp17-1FbpO8hA9DIB6HSjvUgvtgFREokQD0MsdSv3D358agbytQiccEAb36AtyncaADiJU3kiC5yFA5MTvnfcXi7u4VBpcw1N-A1Q9oIaMGrULXyRIFWzPvZqvMUwUelOAcGyEc1AbfCjBJvitbJnKqSLQiXLEBvbyBu1Z4ia2pHT0zLJ1R~bIZ91rVSeLL7oflWtxuDwzuvpusT1SFvCcUv6nys2ZRf90I5R8NOJnrU-P-H0jLYtNZB2cQEiFD1J~68~0IRYuNZfu0v6mFRzJDsvhhZHMh3g__"
+                            alt="">
+                        <img src="https://s3-alpha-sig.figma.com/img/9e42/84ab/38af9eb0311092256187c9f93644317e?Expires=1731283200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=i9kbVAPPZtXgNB4jBctnATL30WyoVzOqg5XbO0YqWKOHva~5MfkxVxl7lEY5xEikXT6w-UzGSPsgoAAJNWlXJ7M5zdl-EMMwfY5OLd7FAw548Gw1KjT6At4IvoJvrNK-AjKdCiz9QSBkVQk1YsPL3LAA9RLbjoOdGKT2VHPrRCeKxb6PN3NcUNTBMpLG0zW0Uh1S-Q~OtBn9jhgdpgpmDA3uNmGxLnls8cTYJI6Esq2KFf4J0GvyjQm0XIyWIul0r4jHD3IAiDHWmD~tOiGuyD7aWnjRDkf0fvj1Vh2o3DVIUhK92Ydq~PfxswgggdYOfA0JmLUfujydEPZ2NfYE3Q__"
+                            alt="">
+                        <img src="https://s3-alpha-sig.figma.com/img/ad49/aaca/d549f8635217f9a2c71d90297b883846?Expires=1731283200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=VaTrM~v-~3SX3Svl~joNe46uacOVd5za8zfVDGSU2j9ANkOv0c6KIYftVTL8N5nO280yqXpxhaOV2YhDtV-qn6SK~1L-~khitDGNXxpPdWJx4WScb~L0tcYTZbkuaue7TALUOzRZZNBSoNderq5n6J-jeuYdMkpCnD8bXVJ7w9jlgS9NjQAWVEM6OIwr0UCOZ3iUO6glDfkzpuVjnABxJ0bXzXr2x7uajZ4CH1Dprvffn~G2QAF1bkn2LDwBroAE0neFY1Tt1-NrWnu~TAhKBQGIdaG8vE8FND6Q5PBNmnO531GlbE2by1i2WdvlTD1vqY1MSbFG6MplG8rdqidvXg__"
+                            alt="">
+                    </div>
+                    <h1>Passion Projects</h1>
+                    <ul>
+                        <li>Shopify plugin to help brands & sellers convert customer stalled transactions through
+                            production-ready AI voice agents (in development).</li>
+                        <li>Digital Marketplace to connect unsponsored athletes with new brands (ideation phase).</li>
+                        <li>AI-digital scrapbooking application tailored for people with dementia (ideation phase).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <canvas id="ghost" width="2520" height="1822"></canvas>
+    <footer>
+        <div class="footer-center">
+            <p><span class="column"><span class="muted" w="">Today is </span><span id="date">Sunday 6
+                        October</span></span><span class="muted quote">. I
+                    hope you’re having a lovely day.</span></p>
+        </div>
+        <div class="footer-inner">
+            <div>
+                <!-- <p class="small hide-on-mobile"><a id="mailto-link" onclick="copyEmailToClipboard()">Email Me</a></p> -->
+                <p class="muted small"><a href="#">Stay Connected</a></p>
+                <div class="icons muted">
+                    <a href="#"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <title>LinkedIn</title>
+                            <path
+                                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                        </svg></a>
+                    <a href="#"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <title>Instagram</title>
+                            <path
+                                d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077" />
+                        </svg></a>
+                    <a href="#"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <title>MentorCruise</title>
+                            <path
+                                d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0Zm-.387 3.791v8.08H6.947c1.557-2.693 3.111-5.386 4.666-8.08Zm.774 0c1.554 2.694 3.11 5.387 4.666 8.08h-4.666Zm-9.244 8.854h17.714l-1.68 2.91H4.823Zm2.125 3.683h13.464l-1.68 2.908H6.948Z" />
+                        </svg></a>
+                </div>
+            </div>
+            <div>
+                <p class="small">Copyright © 2024 Chris Sordan.</p>
+            </div>
+        </div>
+
+    </footer>
+
+    <script type="x-shader/x-fragment" id="vertShader">
+            precision mediump float;
+    
+            varying vec2 vUv;
+            attribute vec2 a_position;
+    
+            void main() {
+                vUv = .5 * (a_position + 1.);
+                gl_Position = vec4(a_position, 0.0, 1.0);
+            }
+        </script>
+    <script type="x-shader/x-fragment" id="fragShader">
+            precision mediump float;
+    
+            varying vec2 vUv;
+            uniform float u_time;
+            uniform float u_ratio;
+            uniform float u_size;
+            uniform vec2 u_pointer;
+            uniform float u_smile;
+            uniform vec2 u_target_pointer;
+            uniform vec3 u_main_color;
+            uniform vec3 u_border_color;
+            uniform float u_flat_color;
+            uniform sampler2D u_texture;
+    
+            #define TWO_PI 6.28318530718
+            #define PI 3.14159265358979323846
+    
+            vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+            float snoise(vec2 v) {
+                const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+                vec2 i = floor(v + dot(v, C.yy));
+                vec2 x0 = v - i + dot(i, C.xx);
+                vec2 i1;
+                i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+                vec4 x12 = x0.xyxy + C.xxzz;
+                x12.xy -= i1;
+                i = mod289(i);
+                vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+                vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);
+                m = m*m;
+                m = m*m;
+                vec3 x = 2.0 * fract(p * C.www) - 1.0;
+                vec3 h = abs(x) - 0.5;
+                vec3 ox = floor(x + 0.5);
+                vec3 a0 = x - ox;
+                m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+                vec3 g;
+                g.x = a0.x * x0.x + h.x * x0.y;
+                g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+                return 130.0 * dot(m, g);
+            }
+            vec2 rotate(vec2 v, float angle) {
+                float r_sin = sin(angle);
+                float r_cos = cos(angle);
+                return vec2(v.x * r_cos - v.y * r_sin, v.x * r_sin + v.y * r_cos);
+            }
+    
+            float eyes(vec2 uv) {
+                uv.y -= .5;
+                uv.x *= 1.;
+                uv.y *= .8;
+                uv.x = abs(uv.x);
+                uv.y += u_smile * .3 * pow(uv.x, 1.3);
+                uv.x -= (.6 + .2 * u_smile);
+    
+                float d = clamp(length(uv), 0., 1.);
+                return 1. - pow(d, .08);
+            }
+    
+            float mouth(vec2 uv) {
+                uv.y += 1.5;
+    
+                uv.x *= (.5 + .5 * abs(1. - u_smile));
+                uv.y *= (3. - 2. * abs(1. - u_smile));
+                uv.y -= u_smile * 4. * pow(uv.x, 2.);
+    
+                float d = clamp(length(uv), 0., 1.);
+                return 1. - pow(d, .07);
+            }
+    
+            float face(vec2 uv, float rotation) {
+                uv = rotate(uv, rotation);
+                uv /= (.27 * u_size);
+    
+                float eyes_shape = 10. * eyes(uv);
+                float mouth_shape = 20. * mouth(uv);
+    
+                float col = 0.;
+                col = mix(col, 1., eyes_shape);
+                col = mix(col, 1., mouth_shape);
+    
+                return col;
+            }
+    
+            void main() {
+    
+                vec2 point = u_pointer;
+                point.x *= u_ratio;
+    
+                vec2 uv = vUv;
+                uv.x *= u_ratio;
+                uv -= point;
+    
+                float texture = texture2D(u_texture, vec2(vUv.x, 1. - vUv.y)).r;
+                float shape = texture;
+    
+                float noise = snoise(uv * vec2(.7 / u_size, .6 / u_size) + vec2(0., .0015 * u_time));
+                noise += 1.2;
+                noise *= 2.1;
+                noise += smoothstep(-.8, -.2, (uv.y) / u_size);
+    
+                float face = face(uv, 5. * (u_target_pointer.x - u_pointer.x));
+                shape -= face;
+    
+                shape *= noise;
+    
+                vec3 border = (1. - u_border_color);
+                border.g += .2 * sin(.005 * u_time);
+                border *= .5;
+    
+                vec3 color = u_main_color;
+                color -= (1. - u_flat_color) * border * smoothstep(.0, .01, shape);
+    
+                shape = u_flat_color * smoothstep(.8, 1., shape) + (1. - u_flat_color) * shape;
+                color *= shape;
+    
+                gl_FragColor = vec4(color, shape);
+            }
+        </script>
+
+</body>
